@@ -1,17 +1,27 @@
 #include<iostream>
 #include <cmath>
 #include<cstdlib>
+#include <armadillo>
+
 using namespace std;
+using namespace arma;
 float tensorproduct(float,float);
-main()
+int main()
 {
-	float c[500],m[500][500],p=0,m1[500],r[500][500];
-	int i,j,k,d,e,l=1,f,g,h;
+	
+	double c[500],m[500][500],p,m1[500],r[500][500],x[500];
+	int i,j,k,d,e,f,g,h,n=1;
 	cout<<"Give the dimenson:";
 	cin>> d;
+	default_random_engine genrator (0);
+	normal_distribution <double> distribution (0.0,1.0);
+	while(n!=100)
+	{
+	p=0;
 	for(i=1;i<=d*d;i++)
 	{
-		c[i]=rand()%10;
+		
+		c[i]={distribution(genrator)};
 		p=p+c[i]*c[i];
 	}
 	for(i=1;i<=d*d;i++)
@@ -26,7 +36,7 @@ main()
 		}
 	}
 	//Partial Trace Part
-	cout<<"Partial trace 2nd system:"<<endl;
+	//cout<<"Partial trace 2nd system:"<<endl;
 	f=0;k=0;h=0;
 	while(f!=d*d)
 	{
@@ -63,18 +73,31 @@ main()
 		}
 		e++;
 	}
-	cout<<"\n"<<" ";
-	for(i=1;i<=d;i++)
-	{
-		for(j=1;j<=d;j++)
-		{
-			cout<<r[i][j]<<" ";
-		}
-		cout<<"\n"<<" ";
-	}
 	//Von Neumann Entropy
-	cout<<"\n"<<" ";
-	cout<<"The Von Neumann Entropy is:"<<endl;
+	mat A(d,d,fill::zeros);
+	for(i=0;i<d;i++)
+	{
+	for(j=0;j<d;j++)
+	{
+	A(i,j)=r[i+1][j+1];
+	}
+	}
+	// Eigenvalue
+	vec B=eig_sym(A);
+	//cout<<"The Von Neumann Entropy is:"<<endl;
+	p=0;
+	for(i=0;i<d;i++)
+	{
+	    p=p-B(i)*log2(B(i));
+	 }
+	x[n]=p;
+	n++;
+	}
+	cout<<"Eigenvalues are:"<<endl;
+	for(i=1;i<100;i++)
+	{
+	  cout<<x[i]<<" ";
+	  }
 	
 }
 //float tensorproduct(float,float)
@@ -83,4 +106,3 @@ main()
 //	int i,j,k;
 	
 //}
-
